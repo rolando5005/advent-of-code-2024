@@ -1,7 +1,7 @@
 from envireach_logging import Logger
 from datetime import datetime
 
-class Day01A:
+class Day01PartA:
     
     def __init__(self):
         self._input = None
@@ -34,7 +34,7 @@ class Day01A:
         return self._result
 
 if __name__ == "__main__":
-    puzzle = Day01A()
+    puzzle = Day01PartA()
     logger = Logger()
     
     puzzle.read_input()

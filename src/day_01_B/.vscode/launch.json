@@ -1,0 +1,12 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "type": "debugpy",
+            "request": "launch",
+            "name": "Day 01 Part B",
+            "program": "${workspaceFolder}/day_01_part_B.py",
+            "console": "integratedTerminal"
+        },
+    ]
+}

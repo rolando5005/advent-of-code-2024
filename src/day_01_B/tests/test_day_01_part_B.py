@@ -1,4 +1,4 @@
-from day_01_A import Day01A
+from day_01_part_B import Day01PartB
 
 EXAMPLE_INPUT = [
     "3   4",
@@ -9,8 +9,8 @@ EXAMPLE_INPUT = [
     "3   3"
 ]
 
-def test_day_01_A_example():
-    puzzle = Day01A()
+def test_day_01_part_B():
+    puzzle = Day01PartB()
     puzzle.read_input(EXAMPLE_INPUT)
     puzzle.solve()
-    assert puzzle.result == 11
+    assert puzzle.result == 31
