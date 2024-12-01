@@ -42,4 +42,4 @@ if __name__ == "__main__":
     puzzle.solve()
     time = datetime.now() - time
     logger.info("Execution time: {} ms".format(time.microseconds/1000))
-    logger.info(puzzle.result)
+    logger.info("Answer: {}".format(puzzle.result))
