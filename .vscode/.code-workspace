@@ -15,5 +15,20 @@
     ],
     "settings": {
         "explorer.sortOrder": "type",
+        "python.testing.unittestEnabled": false,
+        "python.testing.pytestEnabled": true,
+        "python.defaultInterpreterPath": "/home/vscode/.cache/pypoetry/virtualenvs/advent-of-code-2024-kv5VNXqz-py3.12",
+    },
+    "launch": {
+        "version": "0.2.0",
+        "configurations": [
+            {
+                "type": "debugpy",
+                "request": "launch",
+                "name": "Day 01 A",
+                "program": "./src/day_01_A/day_01_A.py",
+                "console": "integratedTerminal"
+            },
+        ]
     }
 }
