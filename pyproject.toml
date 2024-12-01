@@ -1,0 +1,23 @@
+[tool.poetry]
+name = "advent-of-code-2024"
+version = "0.1.0"
+description = ""
+authors = ["rolando5005"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.12"
+envireach-logging = { git = "https://github.com/rolando5005/envireach-python-logging.git", subdirectory = "" }
+pytest = "^8.3.3"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
+
+[tool.pytest.ini_options]
+minversion = "6.0"
+addopts = "-ra -q"
+testpaths = [
+    "tests",
+]
