@@ -5,13 +5,21 @@
             "name": "Main Folder"
         },
         {
-            "path": "../src/day_01_part_A",
+            "path": "../src/day_01_part_a",
             "name": "Day 01 part A"
         },
         {
-            "path": "../src/day_01_part_B",
+            "path": "../src/day_01_part_b",
             "name": "Day 01 part B"
         },
+        {
+            "path": "../src/day_02_part_a",
+            "name": "Day 02 part A"
+        },
+        {
+            "path": "../src/day_02_part_b",
+            "name": "Day 02 part B"
+        }
     ],
     "settings": {
         "explorer.sortOrder": "type",

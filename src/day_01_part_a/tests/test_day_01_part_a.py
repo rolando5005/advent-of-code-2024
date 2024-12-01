@@ -1,4 +1,4 @@
-from day_01_part_A import Day01PartA
+from day_01_part_a import Day01PartA
 
 EXAMPLE_INPUT = [
     "3   4",
@@ -9,7 +9,7 @@ EXAMPLE_INPUT = [
     "3   3"
 ]
 
-def test_day_01_A():
+def test_day_01_part_A():
     puzzle = Day01PartA()
     puzzle.read_input(EXAMPLE_INPUT)
     puzzle.solve()
