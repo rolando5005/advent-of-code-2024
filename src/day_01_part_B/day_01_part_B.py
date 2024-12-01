@@ -28,7 +28,11 @@ class Day01PartB:
         previous_number = None
         
         for i in range(len(left_list)):
-            self._result += abs(left_list[i] - right_list[i])
+            # if previous_number == left_list[i]:
+            #     continue
+            
+            previous_number = left_list[i]
+            self._result += previous_number * right_list.count(previous_number)
 
     @property
     def result(self):

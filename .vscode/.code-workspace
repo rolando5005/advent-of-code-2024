@@ -5,12 +5,12 @@
             "name": "Main Folder"
         },
         {
-            "path": "../src/day_01_A",
-            "name": "Day 01 A"
+            "path": "../src/day_01_part_A",
+            "name": "Day 01 part A"
         },
         {
-            "path": "../src/day_01_B",
-            "name": "Day 01 B"
+            "path": "../src/day_01_part_B",
+            "name": "Day 01 part B"
         },
     ],
     "settings": {
