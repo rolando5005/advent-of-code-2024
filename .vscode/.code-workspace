@@ -5,11 +5,11 @@
             "name": "Main Folder"
         },
         {
-            "path": "../day_01_A",
+            "path": "../src/day_01_A",
             "name": "Day 01 A"
         },
         {
-            "path": "../day_01_B",
+            "path": "../src/day_01_B",
             "name": "Day 01 B"
         },
     ],
