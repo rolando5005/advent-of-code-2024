@@ -15,19 +15,19 @@ class SolverPartA:
                 self._input = f.readlines()
 
     def solve(self):
+        
+        def is_safe(lst):
+            increasing = all(lst[i] <= lst[i + 1] and 1 <= abs(lst[i] - lst[i + 1]) <= 3 for i in range(len(lst) - 1))
+            decreasing = all(lst[i] >= lst[i + 1] and 1 <= abs(lst[i] - lst[i + 1]) <= 3 for i in range(len(lst) - 1))
+            return increasing or decreasing
+        
         self._result = 0
-        left_list = []
-        right_list = []
         for line in self._input:
-            left, right = line.split("   ")
-            left_list.append(int(left))
-            right_list.append(int(right))
-        
-        left_list = sorted(left_list)
-        right_list = sorted(right_list)
-        
-        for i in range(len(left_list)):
-            self._result += abs(left_list[i] - right_list[i])
+            line = list(map(int, line.split(" ")))  # Convert each element to an integer
+            
+            if is_safe(line):
+                self._result += 1
+            
 
     @property
     def result(self):
@@ -41,6 +41,6 @@ if __name__ == "__main__":
     time = datetime.now()
     puzzle.solve()
     time = datetime.now() - time
-    logger.info("AoC Day 01 Part 1:")
+    logger.info("AoC Day 02 Part A:")
     logger.info("Execution time: {} ms".format(time.microseconds/1000))
     logger.info("Answer: {}".format(puzzle.result))
