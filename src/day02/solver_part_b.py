@@ -43,6 +43,6 @@ if __name__ == "__main__":
     time = datetime.now()
     puzzle.solve()
     time = datetime.now() - time
-    logger.info("AoC Day 01 Part B:")
+    logger.info("AoC Day 02 Part B:")
     logger.info("Execution time: {} ms".format(time.microseconds/1000))
     logger.info("Answer: {}".format(puzzle.result))

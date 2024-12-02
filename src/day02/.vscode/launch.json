@@ -4,14 +4,14 @@
         {
             "type": "debugpy",
             "request": "launch",
-            "name": "Day 01 Part A",
+            "name": "Day 02 Part A",
             "program": "${workspaceFolder}/solver_part_a.py",
             "console": "integratedTerminal"
         },
         {
             "type": "debugpy",
             "request": "launch",
-            "name": "Day 01 Part B",
+            "name": "Day 02 Part B",
             "program": "${workspaceFolder}/solver_part_b.py",
             "console": "integratedTerminal"
         },

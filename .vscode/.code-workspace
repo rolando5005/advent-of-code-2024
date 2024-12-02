@@ -5,10 +5,6 @@
             "name": "Main Folder"
         },
         {
-            "path": "../tests",
-            "name": "Tests"
-        },
-        {
             "path": "../src/day01",
             "name": "Day 01"
         },
@@ -21,6 +17,7 @@
         "explorer.sortOrder": "type",
         "python.testing.unittestEnabled": false,
         "python.testing.pytestEnabled": true,
+        "python.analysis.autoImportCompletions": true,
         "python.defaultInterpreterPath": "/home/vscode/.cache/pypoetry/virtualenvs/advent-of-code-2024-kv5VNXqz-py3.12",
     }
 }
