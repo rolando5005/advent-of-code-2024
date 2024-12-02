@@ -1,7 +1,7 @@
 from envireach_logging import Logger
 from datetime import datetime
 
-class Day01PartA:
+class solverPartB:
     
     def __init__(self):
         self._input = None
@@ -25,21 +25,24 @@ class Day01PartA:
         
         left_list = sorted(left_list)
         right_list = sorted(right_list)
+        previous_number = None
         
-        for i in range(len(left_list)):
-            self._result += abs(left_list[i] - right_list[i])
+        for i in range(len(left_list)):            
+            previous_number = left_list[i]
+            self._result += previous_number * right_list.count(previous_number)
 
     @property
     def result(self):
         return self._result
 
 if __name__ == "__main__":
-    puzzle = Day01PartA()
     logger = Logger()
     
+    puzzle = solverPartB()
     puzzle.read_input()
     time = datetime.now()
     puzzle.solve()
     time = datetime.now() - time
+    logger.info("AoC Day 01 Part 2:")
     logger.info("Execution time: {} ms".format(time.microseconds/1000))
     logger.info("Answer: {}".format(puzzle.result))

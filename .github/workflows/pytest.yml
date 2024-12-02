@@ -5,7 +5,7 @@ on: [push]
 jobs:
   advent-of-code-2024:
     env:
-      working_directory: ./src
+      working_directory: "./src"
     runs-on: ubuntu-latest
     strategy:
       matrix:
