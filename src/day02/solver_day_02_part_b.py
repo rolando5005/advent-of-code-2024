@@ -16,23 +16,19 @@ class SolverPartB:
 
     def solve(self) -> None:
         
-        def is_safe(lst) -> bool:
+        def is_safe(lst, recursive: bool=False) -> bool:
             increasing = all(lst[i] <= lst[i + 1] and 1 <= abs(lst[i] - lst[i + 1]) <= 3 for i in range(len(lst) - 1))
             decreasing = all(lst[i] >= lst[i + 1] and 1 <= abs(lst[i] - lst[i + 1]) <= 3 for i in range(len(lst) - 1))
             
             if increasing or decreasing:
                 return True
-            else:
+            elif recursive == False:
                 # check if removing a single element makes the list safe
                 for i in range(len(lst)):
-                    new_lst = lst[:i] + lst[i+1:]
-                    increasing = all(new_lst[j] <= new_lst[j + 1] and 1 <= abs(new_lst[j] - new_lst[j + 1]) <= 3 for j in range(len(new_lst) - 1))
-                    decreasing = all(new_lst[j] >= new_lst[j + 1] and 1 <= abs(new_lst[j] - new_lst[j + 1]) <= 3 for j in range(len(new_lst) - 1))
-                    if increasing or decreasing:
+                    if is_safe(lst[:i] + lst[i+1:], True):
                         return True
-                return False
-                        
-        
+            return False
+
         self._result = 0
         for line in self._input:
             line = list(map(int, line.split(" ")))  # Convert each element to an integer
