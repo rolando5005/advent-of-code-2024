@@ -1,5 +1,5 @@
-from solver_part_a import SolverPartA
-from solver_part_b import SolverPartB
+from solver_day_01_part_a import SolverPartA
+from solver_day_01_part_b import SolverPartB
 
 EXAMPLE_INPUT = [
     "3   4",

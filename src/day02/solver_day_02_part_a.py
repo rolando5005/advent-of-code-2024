@@ -3,18 +3,18 @@ from datetime import datetime
 
 class SolverPartA:
     
-    def __init__(self):
+    def __init__(self) -> None:
         self._input = None
         self._result = None
     
-    def read_input(self, input=None):
+    def read_input(self, input=None) -> None:
         if input is not None:
             self._input = input
         else:
             with open("input" , "r") as f:
                 self._input = f.readlines()
 
-    def solve(self):
+    def solve(self) -> None:
         
         def is_safe(lst):
             increasing = all(lst[i] <= lst[i + 1] and 1 <= abs(lst[i] - lst[i + 1]) <= 3 for i in range(len(lst) - 1))
