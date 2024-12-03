@@ -17,7 +17,7 @@
 
 	"mounts": [
 		"source=${localEnv:HOME}/.ssh,target=/home/vscode/.ssh,type=bind",
-		"source=${localEnv:HOME}/projects/advent-of-code,target=/workspace/advent-of-code,type=bind"
+		"source=${localEnv:HOME}/projects/advent-of-code,target=/workspaces/advent-of-code,type=bind"
 	],
 	
 	"customizations": {
