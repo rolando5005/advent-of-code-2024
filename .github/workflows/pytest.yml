@@ -25,4 +25,4 @@ jobs:
     - name: Running tests
       working-directory: ${{ env.working_directory }}
       run: |
-        poetry run pytest
+        poetry run pytest --cov
