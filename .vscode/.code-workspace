@@ -16,6 +16,10 @@
             "path": "../src/day03",
             "name": "Day 03"
         },
+        {
+            "path": "../src/day04",
+            "name": "Day 04"
+        }
     ],
     "settings": {
         "explorer.sortOrder": "type",

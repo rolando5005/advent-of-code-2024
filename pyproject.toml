@@ -9,6 +9,7 @@ readme = "README.md"
 python = "^3.12"
 envireach-logging = { git = "https://github.com/rolando5005/envireach-python-logging.git", subdirectory = "" }
 pytest = "^8.3.3"
+pytest-cov = "^6.0.0"
 
 
 [build-system]
