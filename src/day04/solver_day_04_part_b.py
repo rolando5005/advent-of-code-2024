@@ -61,13 +61,6 @@ class SolverPartB:
     @property
     def result(self):
         return self._result
-    @property
-    def result(self):
-        return self._result
-            
-    @property
-    def result(self):
-        return self._result
 
 if __name__ == "__main__":
     logger = Logger()
