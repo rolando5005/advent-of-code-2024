@@ -1,5 +1,6 @@
 from envireach_logging import Logger
 from datetime import datetime
+from time import sleep
 
 EXAMPLE_INPUT = [
     "....#.....\n",
@@ -77,20 +78,26 @@ class SolverPartA:
                 return False, True
         
         def advance_guard(map: list[list[str]], guard: Guard) -> tuple[list[list[str]], Guard, bool]:
+            
+            def is_border(map: list[list[str]], x: int, y: int) -> bool:
+                return x == 0 or x == len(map[y]) - 1 or y == 0 or y == len(map) - 1
+            
             try:
+                border = False
                 if guard.direction == "up":
                     guard._pos_y -= 1
-                    map[guard.pos_y][guard.pos_x] = "X"
                 elif guard.direction == "down":
                     guard._pos_y += 1
-                    map[guard.pos_y][guard.pos_x] = "X"
                 elif guard.direction == "left":
                     guard._pos_x -= 1
-                    map[guard.pos_y][guard.pos_x] = "X"
                 elif guard.direction == "right":
                     guard._pos_x += 1
-                    map[guard.pos_y][guard.pos_x] = "X"
-                return map, guard, False
+                
+                if is_border(map, guard.pos_x, guard.pos_y):
+                    border = True
+                
+                map[guard.pos_y][guard.pos_x] = "X"
+                return map, guard, border
             except IndexError:
                 return map, guard, True
         
@@ -115,6 +122,7 @@ class SolverPartA:
         def visualize_map(map: list[list[str]]) -> None:
             for line in map:
                 self._logger.info("".join(line))
+            self._logger.info("")
         
         map = load_map(self._input)
         x, y, map = get_guard_position(map)
@@ -128,7 +136,7 @@ class SolverPartA:
                 rotate_guard(guard)
             map, guard, reached_border = advance_guard(map, guard)
         
-        visualize_map(map)
+        # visualize_map(map)
         self._logger.info("Guard position: ({}, {})".format(guard.pos_x, guard.pos_y))
         self._result = count_visited(map)
         
