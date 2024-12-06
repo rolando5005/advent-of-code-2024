@@ -1,6 +1,38 @@
 from envireach_logging import Logger
 from datetime import datetime
 
+EXAMPLE_INPUT = [
+    "....#.....\n",
+    ".........#\n",
+    "..........\n",
+    "..#.......\n",
+    ".......#..\n",
+    "..........\n",
+    ".#..^.....\n",
+    "........#.\n",
+    "#.........\n",
+    "......#..."
+]
+
+class Guard:
+    
+    def __init__(self, pos_x: int, pos_y: int, direction: str="up") -> None:
+        self._pos_x = pos_x
+        self._pos_y = pos_y
+        self._direction = direction
+    
+    @property
+    def pos_x(self):
+        return self._pos_x
+    
+    @property
+    def pos_y(self):
+        return self._pos_y
+    
+    @property
+    def direction(self):
+        return self._direction
+
 class SolverPartB:
     
     def __init__(self) -> None:
@@ -17,73 +49,95 @@ class SolverPartB:
 
     def solve(self) -> None:
         
-        def get_rule_set() -> list[set[int, int]]:
-            rule_set = []
-            for line in self._input:
-                if "|" not in line or line == "\n":
-                    continue
-                line = line.replace("\n", "").split("|")
-                rule_set.append((int(line[0]), int(line[1])))
-            return rule_set
+        def load_map(input: list[str]) -> list[list[str]]:
+            map = []
+            for line in input:
+                map.append(list(line.replace("\n", "")))
+            return map
         
-        rule_set = get_rule_set()
+        def get_guard_position(map: list[list[str]]) -> tuple[int, int]:
+            for y in range(len(map)):
+                for x in range(len(map[y])):
+                    if map[y][x] == "^":
+                        map[y][x] = "X"
+                        return (x, y, map)
+            return None, None, map
         
-        def check_page_order(page_numbers: list[int]) -> bool:
-            for rule in rule_set:
-                if not rule[0] in page_numbers:
-                    continue
-                if not rule[1] in page_numbers:
-                    continue
+        def check_obstacle(map: list[list[str]], guard: Guard) -> tuple[bool, bool]:
+            try:
+                if guard.direction == "up":
+                    return map[guard.pos_y - 1][guard.pos_x] == "#", False
+                elif guard.direction == "down":
+                    return map[guard.pos_y + 1][guard.pos_x] == "#", False
+                elif guard.direction == "left":
+                    return map[guard.pos_y][guard.pos_x - 1] == "#", False
+                elif guard.direction == "right":
+                    return map[guard.pos_y][guard.pos_x + 1] == "#", False
+            except IndexError:
+                return False, True
+        
+        def advance_guard(map: list[list[str]], guard: Guard) -> tuple[list[list[str]], Guard, bool]:
+            
+            def is_border(map: list[list[str]], x: int, y: int) -> bool:
+                return x == 0 or x == len(map[y]) - 1 or y == 0 or y == len(map) - 1
+            
+            try:
+                border = False
+                if guard.direction == "up":
+                    guard._pos_y -= 1
+                elif guard.direction == "down":
+                    guard._pos_y += 1
+                elif guard.direction == "left":
+                    guard._pos_x -= 1
+                elif guard.direction == "right":
+                    guard._pos_x += 1
                 
-                index_x = page_numbers.index(rule[0])
-                index_y = page_numbers.index(rule[1])
-                if index_x > index_y:
-                    return False
-
-            return True
-        
-        def order_pages(pages: list[int]) -> list[int]:
-            for rule in rule_set:
-                if not rule[0] in pages:
-                    continue
-                if not rule[1] in pages:
-                    continue
+                if is_border(map, guard.pos_x, guard.pos_y):
+                    border = True
                 
-                index_x = pages.index(rule[0])
-                index_y = pages.index(rule[1])
-                if index_x > index_y:
-                    pages.pop(index_y)
-                    pages.insert(index_x, rule[1])
-            return pages
-
-        def get_to_be_updated_pages() -> list[list[int]]:
-            to_be_updated_pages = []
-            for line in self._input:
-                if "|" in line or line == "\n":
-                    continue
-                
-                line = line.replace("\n", "").split(",")
-                to_be_updated_pages.append([int(page_number) for page_number in line])
-            return to_be_updated_pages
-                
-        def find_middle_item(lst: list) -> any:
-            n = len(lst)
-            if n == 0:
-                return None  # or raise an exception if the list is empty
-            mid_index = n // 2
-
-            return lst[mid_index]
+                map[guard.pos_y][guard.pos_x] = "X"
+                return map, guard, border
+            except IndexError:
+                return map, guard, True
         
-        self._result = 0
-        ordered_pages = []
-        for pages in get_to_be_updated_pages():
-            if not check_page_order(pages):
-                while not check_page_order(pages):
-                    pages = order_pages(pages)
-                ordered_pages.append(order_pages(pages))
+        def rotate_guard(guard: Guard) -> None:
+            if guard.direction == "up":
+                guard._direction = "right"
+            elif guard.direction == "right":
+                guard._direction = "down"
+            elif guard.direction == "down":
+                guard._direction = "left"
+            elif guard.direction == "left":
+                guard._direction = "up"
         
-        for re_ordered_pages in ordered_pages:
-            self._result += find_middle_item(re_ordered_pages)
+        def count_visited(map: list[list[str]]) -> int:
+            visited = 0
+            for y in range(len(map)):
+                for x in range(len(map[y])):
+                    if map[y][x] == "X":
+                        visited += 1
+            return visited
+        
+        def visualize_map(map: list[list[str]]) -> None:
+            for line in map:
+                self._logger.info("".join(line))
+            self._logger.info("")
+        
+        map = load_map(self._input)
+        x, y, map = get_guard_position(map)
+        guard = Guard(x, y, "up")
+        
+        reached_border = False
+        
+        while not reached_border:
+            facing_obstacle, reached_border = check_obstacle(map, guard)
+            if facing_obstacle:
+                rotate_guard(guard)
+            map, guard, reached_border = advance_guard(map, guard)
+        
+        # visualize_map(map)
+        self._logger.info("Guard position: ({}, {})".format(guard.pos_x, guard.pos_y))
+        self._result = count_visited(map)
         
     @property
     def result(self):

@@ -20,8 +20,8 @@ def test_solver_day_05_part_a():
     puzzle.solve()
     assert puzzle.result == 41
 
-# def test_solver_day_05_part_b():
-#     puzzle = SolverPartB()
-#     puzzle.read_input(EXAMPLE_INPUT)
-#     puzzle.solve()
-#     assert puzzle.result == 123
+def test_solver_day_05_part_b():
+    puzzle = SolverPartB()
+    puzzle.read_input(EXAMPLE_INPUT)
+    puzzle.solve()
+    assert puzzle.result == 6

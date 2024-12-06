@@ -1,19 +1,5 @@
 from envireach_logging import Logger
 from datetime import datetime
-from time import sleep
-
-EXAMPLE_INPUT = [
-    "....#.....\n",
-    ".........#\n",
-    "..........\n",
-    "..#.......\n",
-    ".......#..\n",
-    "..........\n",
-    ".#..^.....\n",
-    "........#.\n",
-    "#.........\n",
-    "......#..."
-]
 
 class Guard:
     
