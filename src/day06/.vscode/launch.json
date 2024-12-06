@@ -1,0 +1,19 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "type": "debugpy",
+            "request": "launch",
+            "name": "Day 06 Part A",
+            "program": "${workspaceFolder}/solver_day_06_part_a.py",
+            "console": "integratedTerminal"
+        },
+        {
+            "type": "debugpy",
+            "request": "launch",
+            "name": "Day 06 Part B",
+            "program": "${workspaceFolder}/solver_day_06_part_b.py",
+            "console": "integratedTerminal"
+        },
+    ]
+}
