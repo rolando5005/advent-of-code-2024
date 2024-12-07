@@ -1,5 +1,5 @@
 from envireach_logging import Logger
-from datetime import datetime
+from datetime import datetime, timedelta
 
 class Guard:
     
@@ -130,6 +130,13 @@ class SolverPartA:
     def result(self):
         return self._result
 
+def format_time(time: timedelta) -> str:
+    total_seconds = int(time.total_seconds())
+    milliseconds = int(time.microseconds / 1000)
+    hours, remainder = divmod(total_seconds, 3600)
+    minutes, seconds = divmod(remainder, 60)
+    return f"{hours:02}:{minutes:02}:{seconds:02}:{milliseconds:03}"
+
 if __name__ == "__main__":
     logger = Logger()
     
@@ -139,5 +146,5 @@ if __name__ == "__main__":
     puzzle.solve()
     time = datetime.now() - time
     logger.info("AoC Day 06 Part A:")
-    logger.info("Execution time: {} ms".format(time.microseconds/1000))
+    logger.info("Execution time: {}".format(format_time(time)))
     logger.info("Answer: {}".format(puzzle.result))
