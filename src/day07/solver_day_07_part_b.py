@@ -23,7 +23,7 @@ def check_equation(args) -> int:
     def helper(index, current_value, operations) -> bool:
         if index == len(equation):
             if current_value == answer:
-                logger.info("Equation: {} = {}".format(operations, answer))
+                # logger.info("Equation: {} = {}".format(operations, answer))
                 return True
             return False
 
