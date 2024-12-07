@@ -1,23 +1,9 @@
 import multiprocessing
-from time import sleep
-from webbrowser import get
 
 from envireach_logging import Logger
 from datetime import datetime, timedelta
 from copy import deepcopy
 
-EXAMPLE_INPUT = [
-    "....#.....\n",
-    ".........#\n",
-    "..........\n",
-    "..#.......\n",
-    ".......#..\n",
-    "..........\n",
-    ".#..^.....\n",
-    "........#.\n",
-    "#.........\n",
-    "......#..."
-]
 
 class Guard:
     
@@ -25,136 +11,138 @@ class Guard:
         self._pos_x = pos_x
         self._pos_y = pos_y
         self._direction = direction
+        self._start_position = (pos_x, pos_y)
     
     @property
-    def pos_x(self):
+    def pos_x(self) -> int:
         return self._pos_x
     
     @property
-    def pos_y(self):
+    def pos_y(self) -> int:
         return self._pos_y
     
     @property
-    def direction(self):
+    def direction(self) -> str:
         return self._direction
-
-def check_obstacle(map: list[list[str]], guard: Guard) -> tuple[bool, bool, bool]:
-    try:
-        if guard.direction == "up":
-            return map[guard.pos_y - 1][guard.pos_x] in ["#", "O"], False
-        elif guard.direction == "down":
-            return map[guard.pos_y + 1][guard.pos_x] in ["#", "O"], False
-        elif guard.direction == "left":
-            return map[guard.pos_y][guard.pos_x - 1] in ["#", "O"], False
-        elif guard.direction == "right":
-            return map[guard.pos_y][guard.pos_x + 1] in ["#", "O"], False
-    except IndexError:
-        return False, True
-
-def advance_guard(map: list[list[str]], guard: Guard) -> tuple[list[list[str]], Guard, bool]:
     
-    def is_border(map: list[list[str]], x: int, y: int) -> bool:
-        return x == 0 or x == len(map[y]) - 1 or y == 0 or y == len(map) - 1
+    @property
+    def start_position(self) -> tuple[int, int]:
+        return self._start_position
+
+class GuardMap: 
     
-    try:
-        border = False
-        if guard.direction == "up":
-            guard._pos_y -= 1
-        elif guard.direction == "down":
-            guard._pos_y += 1
-        elif guard.direction == "left":
-            guard._pos_x -= 1
-        elif guard.direction == "right":
-            guard._pos_x += 1
-        
-        if is_border(map, guard.pos_x, guard.pos_y):
-            border = True
-        
-        map[guard.pos_y][guard.pos_x] = "X"
-        return map, guard, border
-    except IndexError:
-        return map, guard, True
+    def __init__(self, map: list[list[str]], guard: Guard) -> None:
+        self._map = map
+        self._guard = guard
+        self._obstacle_locations = []
+        self._logger = Logger()
 
-def rotate_guard(guard: Guard) -> None:
-    if guard.direction == "up":
-        guard._direction = "right"
-    elif guard.direction == "right":
-        guard._direction = "down"
-    elif guard.direction == "down":
-        guard._direction = "left"
-    elif guard.direction == "left":
-        guard._direction = "up"
-
-def check_placed_obstacle(map: list[list[str]], guard: Guard) -> bool:
-    if guard.direction == "up":
-        return map[guard.pos_y - 1][guard.pos_x] == "O"
-    elif guard.direction == "down":
-        return map[guard.pos_y + 1][guard.pos_x] == "O"
-    elif guard.direction == "left":
-        return map[guard.pos_y][guard.pos_x - 1] == "O"
-    elif guard.direction == "right":
-        return map[guard.pos_y][guard.pos_x + 1] == "O"
-
-def get_placed_obstacle(guard: Guard) -> tuple[int, int]:
-    if guard.direction == "up":
-        return guard.pos_x, guard.pos_y - 1
-    elif guard.direction == "down":
-        return guard.pos_x, guard.pos_y + 1
-    elif guard.direction == "left":
-        return guard.pos_x - 1, guard.pos_y
-    elif guard.direction == "right":
-        return guard.pos_x + 1, guard.pos_y
-
-def check_for_loop(map: list[list[str]], guard: Guard) -> bool:
-    logger = Logger()
-    reached_border = False
-    location_placed_obstacle = None
-    location_seen_obstacles = []
-    time = datetime.now() + timedelta(seconds=5)
-    while not reached_border:
-        
-        facing_obstacle, reached_border = check_obstacle(map, guard)
-        if facing_obstacle == True:
-            location_seen_obstacle = get_placed_obstacle(guard)
-            
-            if location_placed_obstacle is None and check_placed_obstacle(map, guard):
-                location_placed_obstacle = get_placed_obstacle(guard)
-            
-            if location_seen_obstacle in location_seen_obstacles and location_placed_obstacle is not None:
-                logger.info("Found loop at {}, {}".format(location_seen_obstacle[0], location_seen_obstacle[1]))
-                return True
-            else:
-                location_seen_obstacles.append(location_seen_obstacle)
-            
-            # if location_placed_obstacle is None and check_placed_obstacle(map, guard):
-            #     location_placed_obstacle = get_placed_obstacle(guard)
-            # elif location_placed_obstacle == get_placed_obstacle(guard):
-            #     pos_x, pos_y = get_placed_obstacle(guard)
-            #     logger.info("Found loop at {}, {}".format(pos_x, pos_y))
-            #     return True
-                
-            rotate_guard(guard)
-        map, guard, reached_border = advance_guard(map, guard)
-        
-        if time < datetime.now():
-            time = datetime.now() + timedelta(seconds=20)
-            pos_x, pos_y = get_placed_obstacle(guard)
-            logger.info("timeout reached at {}, {}".format(pos_x, pos_y))
+    def is_guard_facing_obstacle(self) -> bool:
+        try:
+            if self._guard.direction == "up":
+                return self._map[self._guard.pos_y - 1][self._guard.pos_x] in ["#", "O"]
+            elif self._guard.direction == "down":
+                return self._map[self._guard.pos_y + 1][self._guard.pos_x] in ["#", "O"]
+            elif self._guard.direction == "left":
+                return self._map[self._guard.pos_y][self._guard.pos_x - 1] in ["#", "O"]
+            elif self._guard.direction == "right":
+                return self._map[self._guard.pos_y][self._guard.pos_x + 1] in ["#", "O"]
+        except IndexError:
             return False
-    return False
+    
+    def guard_reached_each_map_border(self) -> bool:
+        return self._guard.pos_x == 0 or self._guard.pos_x == len(self._map[0]) - 1 or self._guard.pos_y == 0 or self._guard.pos_y == len(self._map) - 1
+    
+    def guard_advance(self) -> None:
+        self._map[self._guard.pos_y][self._guard.pos_x] = "X"
+        if self._guard.direction == "up":
+            self._guard._pos_y -= 1
+        elif self._guard.direction == "down":
+            self._guard._pos_y += 1
+        elif self._guard.direction == "left":
+            self._guard._pos_x -= 1
+        elif self._guard.direction == "right":
+            self._guard._pos_x += 1
+    
+    def guard_rotate(self) -> None:
+        if self._guard.direction == "up":
+            self._obstacle_locations.append((self._guard.pos_x, self._guard.pos_y + 1))
+            self._guard._direction = "right"
+        elif self._guard.direction == "right":
+            self._obstacle_locations.append((self._guard.pos_x + 1, self._guard.pos_y))
+            self._guard._direction = "down"
+        elif self._guard.direction == "down":
+            self._obstacle_locations.append((self._guard.pos_x, self._guard.pos_y - 1))
+            self._guard._direction = "left"
+        elif self._guard.direction == "left":
+            self._obstacle_locations.append((self._guard.pos_x - 1, self._guard.pos_y))
+            self._guard._direction = "up"
+    
+    def check_if_seen_obstacle_before(self) -> bool:
+        if self._guard.direction == "up":
+            obstacle_location = (self._guard.pos_x, self._guard.pos_y + 1)
+        elif self._guard.direction == "right":
+            obstacle_location = (self._guard.pos_x + 1, self._guard.pos_y)
+        elif self._guard.direction == "down":    
+            obstacle_location = (self._guard.pos_x, self._guard.pos_y - 1)
+        elif self._guard.direction == "left":
+            obstacle_location = (self._guard.pos_x - 1, self._guard.pos_y)
+        
+        return self._obstacle_locations.count(obstacle_location) > 9
+    
+    def check_for_loop(self) -> bool:
+        while not self.guard_reached_each_map_border():
+            while self.is_guard_facing_obstacle():
+                if self.check_if_seen_obstacle_before():
+                    return True
+                self.guard_rotate()
+                
+            self.guard_advance()
+        return False
 
-def visualize_map(map: list[list[str]]) -> None:
-    for line in map:
-        logger.info("".join(line))
-    logger.info("")
+    def get_positions_to_place_obstacle(self) -> list[tuple[int, int]]:
+        self._logger.info("Starting to traverse the map")
+        while not self.guard_reached_each_map_border():
+            if self.is_guard_facing_obstacle():
+                self.guard_rotate()
+            self.guard_advance()
+        
+        self._logger.info("Traversing the map is done")
+        self._logger.info("Starting to find positions to place the obstacle")
+        positions = []
+        for y in range(len(self._map)):
+            for x in range(len(self._map[y])):
+                if self._map[y][x] == ".":
+                    if y > 0 and self._map[y - 1][x] == "X":
+                        positions.append((x, y))
+                    elif y < len(self._map) - 1 and self._map[y + 1][x] == "X":
+                        positions.append((x, y))
+                    elif x > 0 and self._map[y][x - 1] == "X":
+                        positions.append((x, y))
+                    elif x < len(self._map[y]) - 1 and self._map[y][x + 1] == "X":
+                        positions.append((x, y))
+                    elif self._map[y][x] == "X":
+                        positions.append((x, y))
+                elif self._map[y][x] == "X":
+                    positions.append((x, y))
+        self._logger.info("Finding positions to place the obstacle is done")
+        self._logger.info("Positions to place the obstacle: {}".format(len(positions)))
+        return positions
 
-def process_position(args):
-    pos_x, pos_y, map, guard = args
-    used_map = deepcopy(map)
-    used_map[pos_y][pos_x] = "O"
-    if check_for_loop(used_map, guard):
-        return pos_x, pos_y, True
-    return pos_x, pos_y, False
+    def visual_map(self, map: list[list[str]]=None) -> None:
+        if map is None:
+            map = self._map
+        
+        for line in map:
+            self._logger.info("".join(line))
+        self._logger.info("")
+
+def process_guard_map(args) -> bool:
+    obstacle_pos, guard_start_pos, map  = args
+    map_with_obstacle = deepcopy(map)
+    map_with_obstacle[obstacle_pos[1]][obstacle_pos[0]] = "O"
+    guard_map = GuardMap(map_with_obstacle, Guard(*guard_start_pos))
+    return guard_map.check_for_loop(), map_with_obstacle
 
 class SolverPartB:
     
@@ -182,31 +170,24 @@ class SolverPartB:
             for y in range(len(map)):
                 for x in range(len(map[y])):
                     if map[y][x] == "^":
-                        map[y][x] = "X"
-                        return (x, y, map)
-            return None, None, map
-
+                        return (x, y)
+            return None, None
+        
         self._result = 0
-        
         map = load_map(self._input)
-        x, y, map = get_guard_position(map)
-
-        positions = [(pos_x, pos_y, map, Guard(x, y, "up")) for pos_y, map_y in enumerate(map) for pos_x, value in enumerate(map_y) if value == "."]
-
-        with multiprocessing.Pool() as pool:
-            results = pool.map(process_position, positions)
-
-        locations = []
-        for pos_x, pos_y, found_loop in results:
-            location = (pos_x, pos_y)
-            if location in locations:
-                self._logger("Found duplicate location")
-                continue
-            
-            locations.append(location)
-            if found_loop:
-                self._result += 1
+        x, y = get_guard_position(map)
+        guard_map = GuardMap(deepcopy(map), Guard(x, y))
+        positions = [(pos, (x, y), map) for pos in guard_map.get_positions_to_place_obstacle()]
         
+        self._logger.info("Checking for loops...")
+        with multiprocessing.Pool() as pool:
+            results = pool.map(process_guard_map, positions)
+        
+        for found_loop, traveled_map in results:
+            if found_loop:
+                # guard_map.visual_map(traveled_map)
+                self._result += 1
+    
     @property
     def result(self):
         return self._result
@@ -232,6 +213,12 @@ if __name__ == "__main__":
     
 
 # 1457 not correct
+# 1485 not correct
+# 1517 not correct
 # 1518 not correct
+# 1575 correct
+# 1659 not correct
 # 2031 not correct
+# 2154 ...
+# 4220 not correct
 # 45.. too high
