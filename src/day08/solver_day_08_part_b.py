@@ -18,28 +18,38 @@ EXAMPLE_INPUT = [
 
 def check_equation(args) -> int:
     equation, answer = args
+    logger = Logger()
 
-    def helper(index, current_value):
+    def helper(index, current_value, operations) -> bool:
         if index == len(equation):
-            return current_value == answer
-        
+            if current_value == answer:
+                # logger.info("Equation: {} = {}".format(operations, answer))
+                return True
+            return False
+
         # Try adding the next number
-        if helper(index + 1, current_value + equation[index]):
+        if helper(index + 1, current_value + equation[index], operations + f" + {equation[index]}"):
             return True
-        
+
         # Try multiplying the next number
-        if helper(index + 1, current_value * equation[index]):
+        if helper(index + 1, current_value * equation[index], operations + f" * {equation[index]}"):
             return True
-        
+
+        # Try concatenating the next number
+        if index < len(equation):
+            concatenated_value = int(str(current_value) + str(equation[index]))
+            if helper(index + 1, concatenated_value, operations + f" || {equation[index]}"):
+                return True
+
         return False
 
     # Start the recursion with the first number in the equation
-    if helper(1, equation[0]):
+    if helper(1, equation[0], str(equation[0])):
         return answer
     else:
         return 0
 
-class SolverPartA:
+class SolverPartB:
     
     def __init__(self) -> None:
         self._input = None
@@ -83,11 +93,11 @@ def format_time(time: timedelta) -> str:
 if __name__ == "__main__":
     logger = Logger()
     
-    puzzle = SolverPartA()
+    puzzle = SolverPartB()
     puzzle.read_input()
     time = datetime.now()
     puzzle.solve()
     time = datetime.now() - time
-    logger.info("AoC Day 07 Part A:")
+    logger.info("AoC Day 07 Part B:")
     logger.info("Execution time: {}".format(format_time(time)))
     logger.info("Answer: {}".format(puzzle.result))

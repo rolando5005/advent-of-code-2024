@@ -31,6 +31,10 @@
         {
             "path": "../src/day07",
             "name": "Day 07"
+        },
+        {
+            "path": "../src/day08",
+            "name": "Day 08"
         }
     ],
     "settings": {
