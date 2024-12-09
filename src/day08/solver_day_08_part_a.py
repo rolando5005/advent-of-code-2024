@@ -100,19 +100,6 @@ class SolverPartA:
 
     def solve(self) -> None:
         
-        def filter_result(result: list[tuple[int, int]]) -> list[tuple[int, int]]:
-            filtered_result = []
-            for anti_node in result:
-                x, y = anti_node
-                if not anti_node in filtered_result and 0 <= x <= antenna_map.width and 0 <= y <= antenna_map.height:
-                    filtered_result.append(anti_node)
-                else:
-                    if not 0 <= x <= antenna_map.width or not 0 <= y <= antenna_map.height:
-                        self._logger.info("Filtered out of bounds Anti-node: {}".format(anti_node))
-                    elif anti_node in filtered_result:
-                        self._logger.info("Filtered duplicate Anti-node: {}".format(anti_node))
-            return filtered_result
-        
         self._result = 0
         antenna_map = AntennaMap(self._input)
         antenna_pairs = antenna_map.get_antenna_pairs()
@@ -155,6 +142,7 @@ if __name__ == "__main__":
     logger.info("AoC Day 08 Part A:")
     logger.info("Execution time: {}".format(format_time(time)))
     logger.info("Answer: {}".format(puzzle.result))
+
 # 166 too low
 # 209 too low
 # 263 not correct
