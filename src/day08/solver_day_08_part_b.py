@@ -1,53 +1,103 @@
 import multiprocessing
-import re
 
 from envireach_logging import Logger
 from datetime import datetime, timedelta
 
 EXAMPLE_INPUT = [
-    "190: 10 19\n",
-    "3267: 81 40 27\n",
-    "83: 17 5\n",
-    "156: 15 6\n",
-    "7290: 6 8 6 15\n",
-    "161011: 16 10 13\n",
-    "192: 17 8 14\n",
-    "21037: 9 7 18 13\n",
-    "292: 11 6 16 20"
+    "............\n",
+    "........0...\n",
+    ".....0......\n",
+    ".......0....\n",
+    "....0.......\n",
+    "......A.....\n",
+    "............\n",
+    "............\n",
+    "........A...\n",
+    ".........A..\n",
+    "............\n",
+    "............"
 ]
 
-def check_equation(args) -> int:
-    equation, answer = args
-    logger = Logger()
+class AntennaMap:
+    
+    def __init__(self, data: list[str]) -> None:
+        self._logger = Logger()
+        data = [list(row.strip()) for row in data]
+        self._map = data
+        self._height = len(data)
+        self._width = len(data[0])
+    
+    def get_antenna_pairs(self) -> list[tuple[int, int]]:
+        
+        def find_antenna_pairs(antenna_frequency: str) -> list[tuple[int, int]]:
+            pairs = []
+            for y in range(self._height):
+                for x in range(self._width):
+                    if self._map[y][x] == antenna_frequency:
+                        for y2 in range(self._height):
+                            for x2 in range(self._width):
+                                if self._map[y2][x2] == antenna_frequency and (x, y) != (x2, y2):
+                                    pairs.append(((x, y), (x2, y2)))
+                                        
+            return pairs
+        
+        pairs = []
+        antenna_frequencies = []
+        for y in range(self._height):
+            for x in range(self._width):
+                if self._map[y][x] != "." and not self._map[y][x] in antenna_frequencies:
+                    antenna_frequencies.append(self._map[y][x])
+                    pairs.extend(find_antenna_pairs(self._map[y][x]))
+        return pairs
 
-    def helper(index, current_value, operations) -> bool:
-        if index == len(equation):
-            if current_value == answer:
-                # logger.info("Equation: {} = {}".format(operations, answer))
-                return True
-            return False
+    def get_map(self, anti_nodes: list[tuple[int, int]]) -> list[str]:
+        map = [list(row) for row in self._map]
+        for x, y in anti_nodes:
+            try:
+                if x >= 0 and y >= 0:
+                    map[y][x] = "#"
+            except IndexError:
+                pass
+        return ["".join(row) for row in map]
 
-        # Try adding the next number
-        if helper(index + 1, current_value + equation[index], operations + f" + {equation[index]}"):
-            return True
+    def get_row(self, index: int) -> str:
+        return "".join(self._map[index])
 
-        # Try multiplying the next number
-        if helper(index + 1, current_value * equation[index], operations + f" * {equation[index]}"):
-            return True
+    @property
+    def width(self) -> int:
+        return self._width
+    
+    @property
+    def height(self) -> int:
+        return self._height
 
-        # Try concatenating the next number
-        if index < len(equation):
-            concatenated_value = int(str(current_value) + str(equation[index]))
-            if helper(index + 1, concatenated_value, operations + f" || {equation[index]}"):
-                return True
+def get_anti_nodes(args) -> list[set[int, int]]:
+    antenna_1, antenna_2, map_hight, map_width = args
+    x1, y1 = antenna_1
+    x2, y2 = antenna_2
+    
+    if x1 == 6 and y1 == 5 and x2 == 8 and y2 == 8:
+        pass
+    
+    dx = x2 - x1
+    dy = y2 - y1
+    
+    out_of_bounds = False
+    anti_nodes = []
+    index = 1
+    while out_of_bounds == False:
+        x = x1 + dx * index
+        y = y1 + dy * index
+        
+        if x < 0 or y < 0:
+            out_of_bounds = True
+        elif x > map_width or y > map_hight:
+            out_of_bounds = True
+        else:
+            anti_nodes.append((x, y))
+            index += 1
 
-        return False
-
-    # Start the recursion with the first number in the equation
-    if helper(1, equation[0], str(equation[0])):
-        return answer
-    else:
-        return 0
+    return anti_nodes
 
 class SolverPartB:
     
@@ -66,18 +116,24 @@ class SolverPartB:
     def solve(self) -> None:
         
         self._result = 0
-        
-        potential_calibrations = []
-        for line in self._input:
-            line = line.strip()
-            answer, equation = line.split(":")
-            equation = [int(number) for number in re.findall(r"\d+", equation)]
-            potential_calibrations.append((equation, int(answer)))
+        antenna_map = AntennaMap(self._input)
+        antenna_pairs = antenna_map.get_antenna_pairs()
+        input = [(antenna_1, antenna_2, antenna_map.width, antenna_map.height) for antenna_1, antenna_2 in antenna_pairs]
         
         with multiprocessing.Pool() as pool:
-            result = pool.map(check_equation, potential_calibrations)
-        
-        self._result = sum(result)
+            results = pool.map(get_anti_nodes, input)
+            result = [item for sublist in results for item in sublist]
+            
+        self._logger.info("Found Anti-nodes: {}".format((len(result))))
+        self._logger.info("Anti-nodes: {}".format(result))
+        map = antenna_map.get_map(result)
+
+        self._logger.info("Map with Anti-nodes:")
+        for index, row in enumerate(map):
+            self._logger.info("{} | {}".format(row, antenna_map.get_row(index)))
+            for spot in row:
+                if spot == "#":
+                    self._result += 1
         
     @property
     def result(self):
@@ -98,6 +154,6 @@ if __name__ == "__main__":
     time = datetime.now()
     puzzle.solve()
     time = datetime.now() - time
-    logger.info("AoC Day 07 Part B:")
+    logger.info("AoC Day 08 Part B:")
     logger.info("Execution time: {}".format(format_time(time)))
     logger.info("Answer: {}".format(puzzle.result))

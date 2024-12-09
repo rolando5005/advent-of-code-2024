@@ -105,7 +105,7 @@ class SolverPartA:
         antenna_pairs = antenna_map.get_antenna_pairs()
         input = [(antenna_1, antenna_2, antenna_map.width, antenna_map.height) for antenna_1, antenna_2 in antenna_pairs]
         
-        with multiprocessing.Pool(1) as pool:
+        with multiprocessing.Pool() as pool:
             results = pool.map(get_anti_nodes, input)
             result = [item for sublist in results for item in sublist]
             
