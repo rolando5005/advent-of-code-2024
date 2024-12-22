@@ -16,3 +16,8 @@ def test_solver_day_09_part_b():
     puzzle.read_input(EXAMPLE_INPUT)
     puzzle.solve()
     assert puzzle.result == 2858
+    
+    puzzle = SolverPartB()
+    puzzle.read_input(["1313165"])
+    puzzle.solve()
+    assert puzzle.result == 169
